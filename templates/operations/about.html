@@ -1,0 +1,797 @@
+
+{% extends 'operations/base.html' %}
+
+{% block title %}About Project | Railway Block Planning{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Hero Section -->
+    <div class="card border-0 shadow-sm mb-4 overflow-hidden"
+         style="background: linear-gradient(120deg, #172554, #312e81, #4338ca); color: white;">
+
+        <div class="card-body p-4 p-lg-5">
+
+            <div class="row align-items-center g-4">
+
+                <div class="col-lg-9">
+
+                    <span class="badge rounded-pill bg-white text-primary px-3 py-2 mb-3">
+                        <i class="bi bi-info-circle"></i>
+                        ABOUT THE PROJECT
+                    </span>
+
+                    <h1 class="fw-bold mb-2">
+                        AI Powered Automatic Block Planning
+                    </h1>
+
+                    <h5 class="fw-normal text-white-50 mb-3">
+                        Maximizing Asset Availability for Train Operations
+                        on Indian Railways
+                    </h5>
+
+                    <p class="mb-4" style="max-width: 850px; line-height: 1.8;">
+                        A web-based railway maintenance planning prototype
+                        that identifies suitable maintenance time windows
+                        by considering train schedules, maintenance duration,
+                        priorities and existing block plans.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2">
+
+                        <a href="{% url 'ai_block_planner' %}" class="btn btn-light text-primary fw-semibold">
+                            <i class="bi bi-cpu"></i>
+                            Explore AI Planner
+                        </a>
+
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-light">
+                            <i class="bi bi-grid"></i>
+                            View Dashboard
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-lg-3 d-none d-lg-flex justify-content-center">
+
+                    <div class="rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 170px; height: 170px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);">
+
+                        <i class="bi bi-train-front-fill"
+                           style="font-size: 90px; color: white;">
+                        </i>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Project Overview -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body p-4 p-lg-5">
+
+            <div class="d-flex align-items-center gap-3 mb-3">
+
+                <div class="rounded-3 bg-primary bg-opacity-10 p-3">
+                    <i class="bi bi-info-circle fs-3 text-primary"></i>
+                </div>
+
+                <div>
+                    <h4 class="fw-bold mb-1">Project Overview</h4>
+                    <small class="text-muted">Understanding the purpose of the system</small>
+                </div>
+
+            </div>
+
+            <p class="text-muted" style="line-height: 1.8;">
+                Railway maintenance activities require temporary
+                blocks of railway sections. Poorly timed maintenance
+                can interfere with train schedules and affect
+                railway operations.
+            </p>
+
+            <p class="text-muted mb-0" style="line-height: 1.8;">
+                This project aims to make maintenance planning more
+                systematic by using a scheduling engine to identify
+                suitable time slots. It considers train movements,
+                maintenance requirements and previously proposed
+                or approved block plans to recommend suitable
+                maintenance windows.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Project Objectives -->
+    <div class="mb-4">
+
+        <div class="mb-3">
+
+            <h4 class="fw-bold mb-1">
+                <i class="bi bi-bullseye text-primary"></i>
+                Project Objectives
+            </h4>
+
+            <p class="text-muted mb-0">
+                Key goals of the automatic block planning system.
+            </p>
+
+        </div>
+
+
+        <div class="row g-3">
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <div class="rounded-3 bg-primary bg-opacity-10 p-3 d-inline-flex">
+                            <i class="bi bi-clock-history fs-3 text-primary"></i>
+                        </div>
+
+                        <h5 class="fw-bold mt-3">Optimize Maintenance Time</h5>
+
+                        <p class="text-muted mb-0">
+                            Identify suitable time windows for railway
+                            maintenance activities.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <div class="rounded-3 bg-success bg-opacity-10 p-3 d-inline-flex">
+                            <i class="bi bi-train-front fs-3 text-success"></i>
+                        </div>
+
+                        <h5 class="fw-bold mt-3">Reduce Conflicts</h5>
+
+                        <p class="text-muted mb-0">
+                            Check train schedules to avoid recommending
+                            conflicting maintenance slots.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <div class="rounded-3 bg-warning bg-opacity-10 p-3 d-inline-flex">
+                            <i class="bi bi-calendar-check fs-3 text-warning"></i>
+                        </div>
+
+                        <h5 class="fw-bold mt-3">Smart Scheduling</h5>
+
+                        <p class="text-muted mb-0">
+                            Consider request priority, duration and
+                            preferred maintenance times.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-6 col-xl-3">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body p-4">
+
+                        <div class="rounded-3 bg-info bg-opacity-10 p-3 d-inline-flex">
+                            <i class="bi bi-graph-up-arrow fs-3 text-info"></i>
+                        </div>
+
+                        <h5 class="fw-bold mt-3">Improve Availability</h5>
+
+                        <p class="text-muted mb-0">
+                            Calculate planned asset availability and
+                            visualize maintenance block hours.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Main System Features -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body p-4 p-lg-5">
+
+            <div class="mb-4">
+
+                <h4 class="fw-bold mb-1">
+                    <i class="bi bi-grid text-primary"></i>
+                    Main System Features
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Core modules and functionalities of the application.
+                </p>
+
+            </div>
+
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+
+                    <div class="d-flex gap-3">
+
+                        <div class="rounded-3 bg-primary bg-opacity-10 p-3 flex-shrink-0"
+                             style="height: fit-content;">
+                            <i class="bi bi-signpost-2 fs-4 text-primary"></i>
+                        </div>
+
+                        <div>
+                            <h6 class="fw-bold mb-2">Railway Asset Management</h6>
+
+                            <p class="text-muted mb-0">
+                                Register and manage railway sections,
+                                section codes, station details and distance.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="d-flex gap-3">
+
+                        <div class="rounded-3 bg-info bg-opacity-10 p-3 flex-shrink-0"
+                             style="height: fit-content;">
+                            <i class="bi bi-train-front fs-4 text-info"></i>
+                        </div>
+
+                        <div>
+                            <h6 class="fw-bold mb-2">Train Schedule Management</h6>
+
+                            <p class="text-muted mb-0">
+                                Maintain train information and schedule
+                                details for different railway sections.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="d-flex gap-3">
+
+                        <div class="rounded-3 bg-warning bg-opacity-10 p-3 flex-shrink-0"
+                             style="height: fit-content;">
+                            <i class="bi bi-tools fs-4 text-warning"></i>
+                        </div>
+
+                        <div>
+                            <h6 class="fw-bold mb-2">Maintenance Requests</h6>
+
+                            <p class="text-muted mb-0">
+                                Submit maintenance requests with work type,
+                                duration, priority and preferred start time.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="d-flex gap-3">
+
+                        <div class="rounded-3 bg-primary bg-opacity-10 p-3 flex-shrink-0"
+                             style="height: fit-content;">
+                            <i class="bi bi-cpu fs-4 text-primary"></i>
+                        </div>
+
+                        <div>
+                            <h6 class="fw-bold mb-2">AI Block Planner</h6>
+
+                            <p class="text-muted mb-0">
+                                Generate and rank possible maintenance
+                                slots after checking occupied time intervals.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="d-flex gap-3">
+
+                        <div class="rounded-3 bg-success bg-opacity-10 p-3 flex-shrink-0"
+                             style="height: fit-content;">
+                            <i class="bi bi-calendar2-check fs-4 text-success"></i>
+                        </div>
+
+                        <div>
+                            <h6 class="fw-bold mb-2">Multiple Request Optimization</h6>
+
+                            <p class="text-muted mb-0">
+                                Use Google OR-Tools to select compatible
+                                time slots for multiple maintenance requests.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="d-flex gap-3">
+
+                        <div class="rounded-3 bg-danger bg-opacity-10 p-3 flex-shrink-0"
+                             style="height: fit-content;">
+                            <i class="bi bi-shield-check fs-4 text-danger"></i>
+                        </div>
+
+                        <div>
+                            <h6 class="fw-bold mb-2">Approval Management</h6>
+
+                            <p class="text-muted mb-0">
+                                Allow administrators to approve or cancel
+                                proposed maintenance block plans.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="d-flex gap-3">
+
+                        <div class="rounded-3 bg-info bg-opacity-10 p-3 flex-shrink-0"
+                             style="height: fit-content;">
+                            <i class="bi bi-bar-chart fs-4 text-info"></i>
+                        </div>
+
+                        <div>
+                            <h6 class="fw-bold mb-2">Dashboard Analytics</h6>
+
+                            <p class="text-muted mb-0">
+                                Display calculated planned availability,
+                                block hours and maintenance statistics.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <div class="d-flex gap-3">
+
+                        <div class="rounded-3 bg-secondary bg-opacity-10 p-3 flex-shrink-0"
+                             style="height: fit-content;">
+                            <i class="bi bi-file-earmark-bar-graph fs-4 text-secondary"></i>
+                        </div>
+
+                        <div>
+                            <h6 class="fw-bold mb-2">Reports</h6>
+
+                            <p class="text-muted mb-0">
+                                View maintenance requests, saved plans
+                                and asset availability reports.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Working Process -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body p-4 p-lg-5">
+
+            <div class="mb-4">
+
+                <h4 class="fw-bold mb-1">
+                    <i class="bi bi-diagram-3 text-primary"></i>
+                    How the System Works
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Step-by-step workflow of maintenance block planning.
+                </p>
+
+            </div>
+
+
+            <div class="row g-3">
+
+                <div class="col-md-6 col-xl-3">
+
+                    <div class="border rounded-3 p-4 text-center h-100">
+
+                        <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center"
+                             style="width: 65px; height: 65px;">
+
+                            <i class="bi bi-tools fs-2 text-primary"></i>
+
+                        </div>
+
+                        <div class="mt-3">
+                            <span class="badge bg-primary mb-2">STEP 01</span>
+                            <h6 class="fw-bold">Submit Request</h6>
+
+                            <p class="text-muted small mb-0">
+                                Submit maintenance requirements,
+                                duration and priority.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 col-xl-3">
+
+                    <div class="border rounded-3 p-4 text-center h-100">
+
+                        <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center"
+                             style="width: 65px; height: 65px;">
+
+                            <i class="bi bi-search fs-2 text-info"></i>
+
+                        </div>
+
+                        <div class="mt-3">
+                            <span class="badge bg-info mb-2">STEP 02</span>
+                            <h6 class="fw-bold">Analyze Schedules</h6>
+
+                            <p class="text-muted small mb-0">
+                                Check train schedules and
+                                occupied time intervals.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 col-xl-3">
+
+                    <div class="border rounded-3 p-4 text-center h-100">
+
+                        <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex align-items-center justify-content-center"
+                             style="width: 65px; height: 65px;">
+
+                            <i class="bi bi-cpu fs-2 text-warning"></i>
+
+                        </div>
+
+                        <div class="mt-3">
+                            <span class="badge bg-warning text-dark mb-2">STEP 03</span>
+                            <h6 class="fw-bold">Generate Recommendations</h6>
+
+                            <p class="text-muted small mb-0">
+                                Generate and rank suitable
+                                maintenance time slots.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 col-xl-3">
+
+                    <div class="border rounded-3 p-4 text-center h-100">
+
+                        <div class="rounded-circle bg-success bg-opacity-10 d-inline-flex align-items-center justify-content-center"
+                             style="width: 65px; height: 65px;">
+
+                            <i class="bi bi-check-circle fs-2 text-success"></i>
+
+                        </div>
+
+                        <div class="mt-3">
+                            <span class="badge bg-success mb-2">STEP 04</span>
+                            <h6 class="fw-bold">Admin Approval</h6>
+
+                            <p class="text-muted small mb-0">
+                                Administrator reviews and
+                                approves proposed plans.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Technology Stack -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body p-4 p-lg-5">
+
+            <div class="mb-4">
+
+                <h4 class="fw-bold mb-1">
+                    <i class="bi bi-code-slash text-primary"></i>
+                    Technology Stack
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Technologies and tools used in the project.
+                </p>
+
+            </div>
+
+
+            <div class="row g-3">
+
+                <div class="col-md-6 col-xl-4">
+
+                    <div class="border rounded-3 p-3 h-100">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <div class="rounded-3 bg-primary bg-opacity-10 p-3">
+                                <i class="bi bi-server fs-3 text-primary"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="fw-bold mb-1">Backend</h6>
+                                <p class="text-muted small mb-0">Python, Django</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 col-xl-4">
+
+                    <div class="border rounded-3 p-3 h-100">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <div class="rounded-3 bg-warning bg-opacity-10 p-3">
+                                <i class="bi bi-window fs-3 text-warning"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="fw-bold mb-1">Frontend</h6>
+                                <p class="text-muted small mb-0">HTML, CSS, JavaScript, Bootstrap 5</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 col-xl-4">
+
+                    <div class="border rounded-3 p-3 h-100">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <div class="rounded-3 bg-success bg-opacity-10 p-3">
+                                <i class="bi bi-database fs-3 text-success"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="fw-bold mb-1">Database</h6>
+                                <p class="text-muted small mb-0">SQLite</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 col-xl-4">
+
+                    <div class="border rounded-3 p-3 h-100">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <div class="rounded-3 bg-info bg-opacity-10 p-3">
+                                <i class="bi bi-diagram-3 fs-3 text-info"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="fw-bold mb-1">Optimization</h6>
+                                <p class="text-muted small mb-0">Google OR-Tools</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 col-xl-4">
+
+                    <div class="border rounded-3 p-3 h-100">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <div class="rounded-3 bg-danger bg-opacity-10 p-3">
+                                <i class="bi bi-bar-chart-line fs-3 text-danger"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="fw-bold mb-1">Data Visualization</h6>
+                                <p class="text-muted small mb-0">Chart.js</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 col-xl-4">
+
+                    <div class="border rounded-3 p-3 h-100">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <div class="rounded-3 bg-secondary bg-opacity-10 p-3">
+                                <i class="bi bi-code-square fs-3 text-secondary"></i>
+                            </div>
+
+                            <div>
+                                <h6 class="fw-bold mb-1">Development Tools</h6>
+                                <p class="text-muted small mb-0">VS Code, Git, Python</p>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Prototype Disclaimer -->
+    <div class="card border-0 shadow-sm mb-4"
+         style="background: #fff8e7;">
+
+        <div class="card-body p-4">
+
+            <div class="d-flex align-items-start gap-3">
+
+                <div class="rounded-3 bg-warning bg-opacity-25 p-3 flex-shrink-0">
+                    <i class="bi bi-exclamation-triangle-fill fs-4 text-warning"></i>
+                </div>
+
+                <div>
+
+                    <h5 class="fw-bold mb-2">
+                        Prototype Disclaimer
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        This application is an academic prototype that uses
+                        simulated railway data. Its block-plan recommendations
+                        and approvals do not authorize actual railway
+                        maintenance blocks or replace official railway
+                        operating and safety procedures.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Footer -->
+    <div class="text-center py-4">
+
+        <div class="d-inline-flex align-items-center gap-2 mb-2">
+
+            <i class="bi bi-train-front-fill text-primary fs-4"></i>
+
+            <span class="fw-bold">
+                Railway AI
+            </span>
+
+        </div>
+
+        <p class="text-muted small mb-0">
+            Automatic Block Planning System
+        </p>
+
+        <small class="text-muted">
+            Academic Project | Railway Operations Management
+        </small>
+
+    </div>
+
+</div>
+
+{% endblock %}

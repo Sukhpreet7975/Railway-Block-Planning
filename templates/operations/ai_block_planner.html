@@ -1,0 +1,562 @@
+
+{% extends 'operations/base.html' %}
+
+{% block title %}AI Block Planner | Railway Operations{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="mb-4">
+        <h2>
+            <i class="bi bi-cpu text-primary"></i>
+            AI Railway Block Planner
+        </h2>
+
+        <p class="text-muted mb-0">
+            Find suitable maintenance windows by checking train schedules and identifying conflict-free time slots.
+        </p>
+    </div>
+
+
+    <!-- Planning Configuration -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">
+                <i class="bi bi-sliders text-primary"></i>
+                Planning Configuration
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <form method="GET">
+
+                <div class="row align-items-end g-3">
+
+                    <!-- Maintenance Request -->
+                    <div class="col-md-6">
+
+                        <label class="form-label fw-semibold">
+                            Select Maintenance Request
+                        </label>
+
+                        <select
+                            name="request_id"
+                            class="form-select"
+                            required
+                        >
+
+                            <option value="">
+                                Choose a maintenance request
+                            </option>
+
+                            {% for item in pending_requests %}
+
+                                <option
+                                    value="{{ item.id }}"
+                                    {% if selected_request and selected_request.id == item.id %}selected{% endif %}
+                                >
+                                    Request {{ item.id }} |
+                                    {{ item.get_work_type_display }} |
+                                    {{ item.section.section_code }} |
+                                    {{ item.duration_minutes }} min
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                        <small class="text-muted">
+                            Select a request to view its railway section and maintenance details.
+                        </small>
+
+                    </div>
+
+
+                    <!-- Planning Date -->
+                    <div class="col-md-4">
+
+                        <label class="form-label fw-semibold">
+                            Planning Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="planning_date"
+                            class="form-control"
+                            value="{{ planning_date|date:'Y-m-d' }}"
+                            required
+                        />
+
+                    </div>
+
+
+                    <!-- Find Slots Button -->
+                    <div class="col-md-2">
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i>
+                            Find Slots
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    {% if selected_request %}
+
+
+    <!-- Selected Request Information -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">
+                <i class="bi bi-clipboard-check text-primary"></i>
+                Selected Maintenance Request
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <div class="col-md-3 col-sm-6">
+                    <small class="text-muted d-block mb-1">
+                        Request ID
+                    </small>
+                    <h6 class="mb-0">
+                        {{ selected_request.id }}
+                    </h6>
+                </div>
+
+
+                <div class="col-md-3 col-sm-6">
+                    <small class="text-muted d-block mb-1">
+                        Section Code
+                    </small>
+                    <h6 class="mb-0">
+                        {{ selected_request.section.section_code }}
+                    </h6>
+                </div>
+
+
+                <div class="col-md-3 col-sm-6">
+                    <small class="text-muted d-block mb-1">
+                        Railway Route
+                    </small>
+                    <h6 class="mb-0">
+                        {{ selected_request.section.from_station }}
+                        - {{ selected_request.section.to_station }}
+                    </h6>
+                </div>
+
+
+                <div class="col-md-3 col-sm-6">
+                    <small class="text-muted d-block mb-1">
+                        Work Type
+                    </small>
+                    <h6 class="mb-0">
+                        {{ selected_request.get_work_type_display }}
+                    </h6>
+                </div>
+
+
+                <div class="col-md-3 col-sm-6">
+                    <small class="text-muted d-block mb-1">
+                        Required Duration
+                    </small>
+                    <span class="badge bg-primary">
+                        <i class="bi bi-clock"></i>
+                        {{ selected_request.duration_minutes }} minutes
+                    </span>
+                </div>
+
+
+                <div class="col-md-3 col-sm-6">
+                    <small class="text-muted d-block mb-1">
+                        Priority
+                    </small>
+
+                    {% if selected_request.priority == 'CRITICAL' %}
+                        <span class="badge bg-danger">Critical</span>
+                    {% elif selected_request.priority == 'HIGH' %}
+                        <span class="badge bg-warning text-dark">High</span>
+                    {% elif selected_request.priority == 'MEDIUM' %}
+                        <span class="badge bg-info text-dark">Medium</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Low</span>
+                    {% endif %}
+                </div>
+
+
+                <div class="col-md-3 col-sm-6">
+                    <small class="text-muted d-block mb-1">
+                        Preferred Start
+                    </small>
+
+                    <h6 class="mb-0">
+                        {% if selected_request.preferred_start %}
+                            {{ selected_request.preferred_start|date:"d M Y, h:i A" }}
+                        {% else %}
+                            <span class="text-muted">Not specified</span>
+                        {% endif %}
+                    </h6>
+                </div>
+
+
+                <div class="col-md-3 col-sm-6">
+                    <small class="text-muted d-block mb-1">
+                        Request Status
+                    </small>
+
+                    {% if selected_request.status == 'PENDING' %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif selected_request.status == 'PLANNED' %}
+                        <span class="badge bg-info text-dark">Planned</span>
+                    {% elif selected_request.status == 'COMPLETED' %}
+                        <span class="badge bg-success">Completed</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Cancelled</span>
+                    {% endif %}
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Planning Results -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-check text-success"></i>
+                    Recommended Maintenance Slots
+                </h5>
+
+                <span class="badge bg-info text-dark">
+                    <i class="bi bi-train-front"></i>
+                    {{ planner_result.total_schedules_checked }} Train Schedules Checked
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if planner_result.recommendations %}
+
+                <!-- Recommendation Summary -->
+                <div class="alert alert-success border-0">
+
+                    <div class="d-flex gap-2">
+
+                        <i class="bi bi-check-circle-fill fs-5"></i>
+
+                        <div>
+                            <strong>
+                                {{ planner_result.recommendations|length }} suitable slots found.
+                            </strong>
+
+                            <p class="mb-0 mt-1">
+                                Recommendations are ranked according to how closely they match the preferred maintenance time.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Recommendation Table -->
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>Rank</th>
+                                <th>Available Window</th>
+                                <th>Recommended Start</th>
+                                <th>Recommended End</th>
+                                <th>Available Duration</th>
+                                <th>Time Difference</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for slot in planner_result.recommendations %}
+
+                            <tr>
+
+                                <!-- Rank -->
+                                <td>
+                                    {% if forloop.first %}
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-star-fill"></i>
+                                            Best Match
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark border">
+                                            Rank {{ forloop.counter }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+
+                                <!-- Available Window -->
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ slot.gap_start|date:"h:i A" }}
+                                    </div>
+                                    <small class="text-muted">
+                                        to {{ slot.gap_end|date:"h:i A" }}
+                                    </small>
+                                </td>
+
+
+                                <!-- Recommended Start -->
+                                <td>
+                                    <span class="fw-semibold text-success">
+                                        {{ slot.start|date:"h:i A" }}
+                                    </span>
+                                </td>
+
+
+                                <!-- Recommended End -->
+                                <td>
+                                    <span class="fw-semibold">
+                                        {{ slot.end|date:"h:i A" }}
+                                    </span>
+                                </td>
+
+
+                                <!-- Available Duration -->
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        {{ slot.available_minutes }} min
+                                    </span>
+                                </td>
+
+
+                                <!-- Time Difference -->
+                                <td>
+                                    {% if slot.difference_minutes == 0 %}
+                                        <span class="badge bg-success">
+                                            Exact Match
+                                        </span>
+                                    {% else %}
+                                        {{ slot.difference_minutes }} min
+                                    {% endif %}
+                                </td>
+
+
+                                <!-- Save Plan -->
+                                <td>
+
+                                    <form method="POST">
+
+                                        {% csrf_token %}
+
+                                        <input
+                                            type="hidden"
+                                            name="request_id"
+                                            value="{{ selected_request.id }}"
+                                        />
+
+                                        <input
+                                            type="hidden"
+                                            name="planning_date"
+                                            value="{{ planning_date|date:'Y-m-d' }}"
+                                        />
+
+                                        <input
+                                            type="hidden"
+                                            name="slot_index"
+                                            value="{{ forloop.counter0 }}"
+                                        />
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-success btn-sm"
+                                        >
+                                            <i class="bi bi-save"></i>
+                                            Save Plan
+                                        </button>
+
+                                    </form>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+            {% else %}
+
+                <!-- No Available Slots -->
+                <div class="text-center py-5">
+
+                    <i class="bi bi-calendar-x fs-1 text-warning"></i>
+
+                    <h5 class="mt-3">
+                        No Suitable Maintenance Slot Found
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        No available time window is long enough for this maintenance request on the selected date.
+                        Try another date or review the train schedules.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Planning Engine Information -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">
+                <i class="bi bi-info-circle text-primary"></i>
+                Planning Engine Information
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-3 mb-3">
+
+                <div class="col-md-4">
+                    <small class="text-muted d-block">
+                        Planning Date
+                    </small>
+                    <strong>
+                        {{ planning_date|date:"d M Y" }}
+                    </strong>
+                </div>
+
+                <div class="col-md-4">
+                    <small class="text-muted d-block">
+                        Planning Window
+                    </small>
+                    <strong>
+                        07:00 AM - 10:00 PM
+                    </strong>
+                </div>
+
+                <div class="col-md-4">
+                    <small class="text-muted d-block">
+                        Railway Section
+                    </small>
+                    <strong>
+                        {{ selected_request.section.section_code }}
+                    </strong>
+                </div>
+
+            </div>
+
+            <div class="alert alert-light border mb-0">
+
+                <i class="bi bi-cpu text-primary"></i>
+
+                The scheduling engine checks train schedule conflicts,
+                merges overlapping occupied intervals, identifies free
+                windows and ranks suitable maintenance slots.
+
+                <hr>
+
+                <small class="text-muted">
+                    This is a scheduling engine for a simulated academic prototype.
+                    Its recommendations are not authorized railway block instructions.
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    {% else %}
+
+
+        <!-- No Selected Request -->
+        {% if pending_requests %}
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body text-center py-5">
+
+                    <i class="bi bi-search fs-1 text-primary"></i>
+
+                    <h5 class="mt-3">
+                        Select a Maintenance Request
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        Choose a pending maintenance request and click
+                        <strong>Find Slots</strong> to generate recommendations.
+                    </p>
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body text-center py-5">
+
+                    <i class="bi bi-clipboard-x fs-1 text-muted"></i>
+
+                    <h5 class="mt-3">
+                        No Pending Maintenance Requests
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        There are currently no pending maintenance requests.
+                        Submit a new request before using the planner.
+                    </p>
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

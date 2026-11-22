@@ -1,0 +1,715 @@
+
+{% extends 'operations/base.html' %}
+
+{% block title %}Reports | Railway Block Planning{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+        <div>
+            <h2>
+                <i class="bi bi-file-earmark-bar-graph text-primary"></i>
+                Railway Operations Reports
+            </h2>
+
+            <p class="text-muted mb-0">
+                Maintenance, block planning and asset availability reports.
+            </p>
+        </div>
+
+        <button onclick="window.print()" class="btn btn-primary">
+            <i class="bi bi-printer"></i>
+            Print Report
+        </button>
+
+    </div>
+
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+
+        <!-- Active Sections -->
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Active Sections
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                {{ total_sections }}
+                            </h2>
+                        </div>
+
+                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                            <i class="bi bi-signpost-2 fs-3 text-primary"></i>
+                        </div>
+
+                    </div>
+
+                    <small class="text-muted">
+                        Currently active railway sections
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Availability -->
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Planned Availability
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                {{ availability_percent }}%
+                            </h2>
+                        </div>
+
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3">
+                            <i class="bi bi-graph-up-arrow fs-3 text-success"></i>
+                        </div>
+
+                    </div>
+
+                    <small class="text-muted">
+                        Calculated asset availability
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Proposed Plans -->
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Proposed Plans
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                {{ proposed_plans }}
+                            </h2>
+                        </div>
+
+                        <div class="rounded-circle bg-warning bg-opacity-10 p-3">
+                            <i class="bi bi-calendar-plus fs-3 text-warning"></i>
+                        </div>
+
+                    </div>
+
+                    <small class="text-muted">
+                        Awaiting approval
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Approved Plans -->
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Approved Plans
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                {{ approved_plans }}
+                            </h2>
+                        </div>
+
+                        <div class="rounded-circle bg-info bg-opacity-10 p-3">
+                            <i class="bi bi-calendar-check fs-3 text-info"></i>
+                        </div>
+
+                    </div>
+
+                    <small class="text-muted">
+                        Approved in the prototype
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Asset Availability Report -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="mb-0">
+                <i class="bi bi-speedometer2 text-primary"></i>
+                Asset Availability Report
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="mb-4">
+
+                <small class="text-muted d-block mb-1">
+                    Planning Date
+                </small>
+
+                <h6 class="mb-0">
+                    <i class="bi bi-calendar-event text-primary"></i>
+                    {{ planning_date|date:"d M Y" }}
+                </h6>
+
+            </div>
+
+
+            <div class="row g-4">
+
+                <!-- Available Hours -->
+                <div class="col-md-6">
+
+                    <div class="p-3 rounded bg-success bg-opacity-10">
+
+                        <small class="text-success fw-semibold">
+                            <i class="bi bi-check-circle"></i>
+                            Available Hours
+                        </small>
+
+                        <h3 class="fw-bold text-success mb-0 mt-2">
+                            {{ total_available_hours }}
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Blocked Hours -->
+                <div class="col-md-6">
+
+                    <div class="p-3 rounded bg-danger bg-opacity-10">
+
+                        <small class="text-danger fw-semibold">
+                            <i class="bi bi-clock-history"></i>
+                            Blocked Hours
+                        </small>
+
+                        <h3 class="fw-bold text-danger mb-0 mt-2">
+                            {{ total_blocked_hours }}
+                        </h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <p class="text-muted small mt-3 mb-0">
+                Availability figures are based on the planning data supplied by the scheduling system.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Block Plan Report -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar2-check text-primary"></i>
+                    Block Plan Report
+                </h5>
+
+                <span class="badge bg-primary">
+                    {{ block_plans|length }} Plans
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if block_plans %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Plan</th>
+                                <th>Maintenance Request</th>
+                                <th>Railway Section</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for plan in block_plans %}
+
+                            <tr>
+
+                                <!-- Plan ID -->
+                                <td>
+                                    <span class="fw-semibold">
+                                        Plan {{ plan.id }}
+                                    </span>
+                                </td>
+
+
+                                <!-- Maintenance Request -->
+                                <td>
+                                    <span class="fw-semibold">
+                                        Request {{ plan.maintenance_request.id }}
+                                    </span>
+
+                                    <small class="text-muted d-block">
+                                        {{ plan.maintenance_request.get_work_type_display }}
+                                    </small>
+                                </td>
+
+
+                                <!-- Section -->
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ plan.maintenance_request.section.section_code }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        {{ plan.maintenance_request.section.from_station }}
+                                        - {{ plan.maintenance_request.section.to_station }}
+                                    </small>
+                                </td>
+
+
+                                <!-- Start Time -->
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ plan.start_time|date:"d M Y" }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        {{ plan.start_time|date:"h:i A" }}
+                                    </small>
+                                </td>
+
+
+                                <!-- End Time -->
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ plan.end_time|date:"d M Y" }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        {{ plan.end_time|date:"h:i A" }}
+                                    </small>
+                                </td>
+
+
+                                <!-- Status -->
+                                <td>
+
+                                    {% if plan.status == 'PROPOSED' %}
+
+                                        <span class="badge bg-warning text-dark">
+                                            Proposed
+                                        </span>
+
+                                    {% elif plan.status == 'APPROVED' %}
+
+                                        <span class="badge bg-success">
+                                            Approved
+                                        </span>
+
+                                    {% elif plan.status == 'COMPLETED' %}
+
+                                        <span class="badge bg-primary">
+                                            Completed
+                                        </span>
+
+                                    {% elif plan.status == 'CANCELLED' %}
+
+                                        <span class="badge bg-secondary">
+                                            Cancelled
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-light text-dark">
+                                            {{ plan.get_status_display }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="text-center py-5">
+
+                    <i class="bi bi-calendar-x fs-1 text-muted"></i>
+
+                    <h5 class="mt-3">
+                        No Block Plans Available
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        No maintenance block plans have been generated yet.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Maintenance Request Report -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                <h5 class="mb-0">
+                    <i class="bi bi-tools text-primary"></i>
+                    Maintenance Request Report
+                </h5>
+
+                <span class="badge bg-primary">
+                    {{ maintenance_requests|length }} Requests
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if maintenance_requests %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Request</th>
+                                <th>Railway Section</th>
+                                <th>Work Type</th>
+                                <th>Duration</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for item in maintenance_requests %}
+
+                            <tr>
+
+                                <!-- Request ID -->
+                                <td>
+                                    <span class="fw-semibold">
+                                        Request {{ item.id }}
+                                    </span>
+                                </td>
+
+
+                                <!-- Railway Section -->
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ item.section.section_code }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        {{ item.section.from_station }}
+                                        - {{ item.section.to_station }}
+                                    </small>
+                                </td>
+
+
+                                <!-- Work Type -->
+                                <td>
+                                    {{ item.get_work_type_display }}
+                                </td>
+
+
+                                <!-- Duration -->
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        <i class="bi bi-clock"></i>
+                                        {{ item.duration_minutes }} min
+                                    </span>
+                                </td>
+
+
+                                <!-- Priority -->
+                                <td>
+
+                                    {% if item.priority == 'CRITICAL' %}
+
+                                        <span class="badge bg-danger">
+                                            Critical
+                                        </span>
+
+                                    {% elif item.priority == 'HIGH' %}
+
+                                        <span class="badge bg-warning text-dark">
+                                            High
+                                        </span>
+
+                                    {% elif item.priority == 'MEDIUM' %}
+
+                                        <span class="badge bg-info text-dark">
+                                            Medium
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-secondary">
+                                            Low
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- Status -->
+                                <td>
+
+                                    {% if item.status == 'PENDING' %}
+
+                                        <span class="badge bg-warning text-dark">
+                                            Pending
+                                        </span>
+
+                                    {% elif item.status == 'PLANNED' %}
+
+                                        <span class="badge bg-info text-dark">
+                                            Planned
+                                        </span>
+
+                                    {% elif item.status == 'COMPLETED' %}
+
+                                        <span class="badge bg-success">
+                                            Completed
+                                        </span>
+
+                                    {% elif item.status == 'CANCELLED' %}
+
+                                        <span class="badge bg-secondary">
+                                            Cancelled
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-light text-dark">
+                                            {{ item.get_status_display }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="text-center py-5">
+
+                    <i class="bi bi-clipboard-x fs-1 text-muted"></i>
+
+                    <h5 class="mt-3">
+                        No Maintenance Requests
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        No maintenance requests are currently available.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Report Disclaimer -->
+    <div class="alert alert-info border-0">
+
+        <div class="d-flex gap-2">
+
+            <i class="bi bi-info-circle fs-5"></i>
+
+            <div>
+                <strong>Report Information</strong>
+
+                <p class="mb-0">
+                    This report uses simulated railway data for academic demonstration.
+                    Availability and block plan figures should not be interpreted as
+                    official Indian Railways operational data or authorization.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Print Styling -->
+<style>
+
+    @media print {
+
+        @page {
+            size: landscape;
+            margin: 12mm;
+        }
+
+        body {
+            background: white !important;
+            color: black !important;
+        }
+
+        .sidebar,
+        .top-navbar,
+        nav,
+        button,
+        .btn {
+            display: none !important;
+        }
+
+        .main-content {
+            margin: 0 !important;
+            width: 100% !important;
+        }
+
+        .page-content {
+            padding: 0 !important;
+        }
+
+        .container-fluid {
+            width: 100% !important;
+            padding: 0 !important;
+        }
+
+        .card {
+            box-shadow: none !important;
+            border: 1px solid #dee2e6 !important;
+            break-inside: avoid;
+            margin-bottom: 15px !important;
+        }
+
+        .card-header {
+            background: #f8f9fa !important;
+            color: black !important;
+        }
+
+        .table {
+            font-size: 11px;
+        }
+
+        .badge {
+            border: 1px solid #999;
+        }
+
+        .alert {
+            border: 1px solid #dee2e6 !important;
+        }
+
+        h2 {
+            font-size: 22px;
+        }
+
+        h5 {
+            font-size: 15px;
+        }
+
+    }
+
+</style>
+
+{% endblock %}

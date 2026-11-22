@@ -1,0 +1,69 @@
+
+{% extends 'operations/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h2>{{ title }}</h2>
+
+    <p class="text-muted">
+        Enter railway section information below.
+    </p>
+
+    <div class="card shadow-sm p-4">
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            {% for field in form %}
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        {{ field.label }}
+                    </label>
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">
+                            {{ field.help_text }}
+                        </small>
+                    {% endif %}
+
+                    {% for error in field.errors %}
+                        <div class="text-danger">
+                            {{ error }}
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+            {% endfor %}
+
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary">
+                Save Section
+            </button>
+
+            <a href="{% url 'section_list' %}"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

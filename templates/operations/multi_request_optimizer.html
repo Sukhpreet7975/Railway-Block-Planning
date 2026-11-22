@@ -1,0 +1,468 @@
+
+{% extends 'operations/base.html' %}
+
+{% block title %}Multiple Request Optimizer | Railway Operations{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+        <div>
+            <h2>
+                <i class="bi bi-diagram-3 text-primary"></i>
+                Multiple Request Optimizer
+            </h2>
+
+            <p class="text-muted mb-0">
+                Optimize multiple pending maintenance requests together using Google OR-Tools.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- Planning Date -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">
+                <i class="bi bi-calendar-event text-primary"></i>
+                Planning Configuration
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <form method="GET">
+
+                <div class="row align-items-end g-3">
+
+                    <div class="col-md-5">
+
+                        <label class="form-label fw-semibold">
+                            Select Planning Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="planning_date"
+                            value="{{ planning_date|date:'Y-m-d' }}"
+                            class="form-control"
+                            required
+                        />
+
+                    </div>
+
+                    <div class="col-md-3">
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-cpu"></i>
+                            Run Optimization
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- Solver Status -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-body">
+
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="rounded-circle bg-primary bg-opacity-10 p-3">
+                    <i class="bi bi-cpu fs-3 text-primary"></i>
+                </div>
+
+                <div>
+
+                    <h5 class="mb-1">
+                        Optimization Status
+                    </h5>
+
+                    <p class="text-muted mb-1">
+                        Solver result
+                    </p>
+
+                    <span class="badge bg-info text-dark">
+                        {{ solver_status|default:"Not available" }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Optimized Schedule -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-check text-success"></i>
+                    Optimized Schedule
+                </h5>
+
+                <span class="badge bg-success">
+                    {{ scheduled|length }} Scheduled
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if scheduled %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Request</th>
+                                <th>Railway Section</th>
+                                <th>Work Type</th>
+                                <th>Priority</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for item in scheduled %}
+
+                            <tr>
+
+                                <!-- Request -->
+                                <td>
+                                    <span class="fw-semibold">
+                                        Request #{{ item.request.id }}
+                                    </span>
+                                </td>
+
+
+                                <!-- Section -->
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ item.request.section.section_code }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        {{ item.request.section.from_station }}
+                                        - {{ item.request.section.to_station }}
+                                    </small>
+                                </td>
+
+
+                                <!-- Work Type -->
+                                <td>
+                                    {{ item.request.get_work_type_display }}
+                                </td>
+
+
+                                <!-- Priority -->
+                                <td>
+
+                                    {% if item.request.priority == 'CRITICAL' %}
+
+                                        <span class="badge bg-danger">
+                                            Critical
+                                        </span>
+
+                                    {% elif item.request.priority == 'HIGH' %}
+
+                                        <span class="badge bg-warning text-dark">
+                                            High
+                                        </span>
+
+                                    {% elif item.request.priority == 'MEDIUM' %}
+
+                                        <span class="badge bg-info text-dark">
+                                            Medium
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-secondary">
+                                            Low
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- Start Time -->
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ item.candidate.start_time|date:"d M Y" }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        {{ item.candidate.start_time|date:"h:i A" }}
+                                    </small>
+                                </td>
+
+
+                                <!-- End Time -->
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ item.candidate.end_time|date:"d M Y" }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        {{ item.candidate.end_time|date:"h:i A" }}
+                                    </small>
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- Save Optimized Plans -->
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mt-3 pt-3 border-top">
+
+                    <div>
+                        <h6 class="mb-1">
+                            Ready to Save?
+                        </h6>
+
+                        <small class="text-muted">
+                            Save the optimized schedule as proposed block plans.
+                        </small>
+                    </div>
+
+                    <form
+                        method="POST"
+                        action="{% url 'save_optimized_plans' %}"
+                    >
+
+                        {% csrf_token %}
+
+                        <input
+                            type="hidden"
+                            name="planning_date"
+                            value="{{ planning_date|date:'Y-m-d' }}"
+                        />
+
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-save"></i>
+                            Save Optimized Plans
+                        </button>
+
+                    </form>
+
+                </div>
+
+            {% else %}
+
+                <div class="text-center py-5">
+
+                    <i class="bi bi-calendar-x fs-1 text-muted"></i>
+
+                    <h5 class="mt-3">
+                        No Requests Scheduled
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        No maintenance requests could be scheduled for the selected date.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Unscheduled Requests -->
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <h5 class="mb-0">
+                    <i class="bi bi-exclamation-circle text-warning"></i>
+                    Unscheduled Requests
+                </h5>
+
+                <span class="badge bg-warning text-dark">
+                    {{ unscheduled|length }} Unscheduled
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if unscheduled %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Request</th>
+                                <th>Railway Section</th>
+                                <th>Work Type</th>
+                                <th>Priority</th>
+                                <th>Result</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for maintenance_request in unscheduled %}
+
+                            <tr>
+
+                                <td>
+                                    <span class="fw-semibold">
+                                        Request #{{ maintenance_request.id }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ maintenance_request.section.section_code }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        {{ maintenance_request.section.from_station }}
+                                        - {{ maintenance_request.section.to_station }}
+                                    </small>
+                                </td>
+
+                                <td>
+                                    {{ maintenance_request.get_work_type_display }}
+                                </td>
+
+                                <td>
+
+                                    {% if maintenance_request.priority == 'CRITICAL' %}
+
+                                        <span class="badge bg-danger">
+                                            Critical
+                                        </span>
+
+                                    {% elif maintenance_request.priority == 'HIGH' %}
+
+                                        <span class="badge bg-warning text-dark">
+                                            High
+                                        </span>
+
+                                    {% elif maintenance_request.priority == 'MEDIUM' %}
+
+                                        <span class="badge bg-info text-dark">
+                                            Medium
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-secondary">
+                                            Low
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        No suitable slot selected
+                                    </span>
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="text-center py-4">
+
+                    <i class="bi bi-check-circle fs-1 text-success"></i>
+
+                    <h5 class="mt-3">
+                        All Requests Scheduled
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        All pending requests with available candidates were scheduled.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Information -->
+    <div class="alert alert-info border-0">
+
+        <div class="d-flex gap-2">
+
+            <i class="bi bi-info-circle fs-5"></i>
+
+            <div>
+                <strong>Important:</strong>
+
+                <p class="mb-0">
+                    The optimizer generates proposed maintenance schedules using
+                    simulated train and maintenance data. Saved plans are proposals
+                    and do not represent authorization to take an actual railway block.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,956 @@
+
+{% extends 'operations/base.html' %}
+
+{% block title %}Dashboard | Railway Block Planning{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Dashboard Heading -->
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-grid-1x2-fill text-primary"></i>
+                Railway Operations Dashboard
+            </h2>
+
+            <p class="text-muted mb-2">
+                AI Powered Automatic Block Planning to Maximize Asset Availability
+            </p>
+
+            <div class="d-flex flex-wrap gap-3 text-muted small">
+                <span>
+                    <i class="bi bi-calendar3 text-primary"></i>
+                    Planning Date:
+                    <strong>{{ planning_date|date:"d M Y" }}</strong>
+                </span>
+
+                <span>
+                    <i class="bi bi-clock text-primary"></i>
+                    Planning Window:
+                    <strong>07:00 - 22:00</strong>
+                </span>
+            </div>
+        </div>
+
+        <a href="{% url 'ai_block_planner' %}" class="btn btn-primary">
+            <i class="bi bi-cpu"></i>
+            Open AI Block Planner
+        </a>
+
+    </div>
+
+
+    <!-- Main Statistics -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted small mb-1">Total Railway Assets</p>
+                            <h2 class="fw-bold mb-1">{{ total_sections }}</h2>
+                            <small class="text-muted">Registered railway sections</small>
+                        </div>
+
+                        <div class="rounded-3 bg-primary bg-opacity-10 p-3">
+                            <i class="bi bi-signpost-2 fs-2 text-primary"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted small mb-1">Total Trains</p>
+                            <h2 class="fw-bold mb-1">{{ total_trains }}</h2>
+                            <small class="text-muted">Registered trains</small>
+                        </div>
+
+                        <div class="rounded-3 bg-info bg-opacity-10 p-3">
+                            <i class="bi bi-train-front fs-2 text-info"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted small mb-1">Pending Requests</p>
+                            <h2 class="fw-bold mb-1">{{ pending_requests }}</h2>
+                            <small class="text-muted">Awaiting maintenance planning</small>
+                        </div>
+
+                        <div class="rounded-3 bg-warning bg-opacity-10 p-3">
+                            <i class="bi bi-clipboard-data fs-2 text-warning"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted small mb-1">Planned Availability</p>
+                            <h2 class="fw-bold mb-1">{{ availability_percent }}%</h2>
+
+                            {% if availability_percent >= 90 %}
+                                <span class="badge bg-success">Excellent</span>
+                            {% elif availability_percent >= 70 %}
+                                <span class="badge bg-warning text-dark">Good</span>
+                            {% else %}
+                                <span class="badge bg-danger">Needs Improvement</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="rounded-3 bg-success bg-opacity-10 p-3">
+                            <i class="bi bi-speedometer2 fs-2 text-success"></i>
+                        </div>
+
+                    </div>
+
+                    <small class="text-muted d-block mt-2">
+                        Based on proposed and approved block plans
+                    </small>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Block Plan Statistics -->
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-calendar-check text-primary fs-5"></i>
+        <h5 class="fw-bold mb-0">Block Plan Overview</h5>
+    </div>
+
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="rounded-3 bg-warning bg-opacity-10 p-3">
+                            <i class="bi bi-hourglass-split fs-3 text-warning"></i>
+                        </div>
+
+                        <div>
+                            <small class="text-muted">Proposed Block Plans</small>
+                            <h3 class="fw-bold mb-0">{{ proposed_plans }}</h3>
+                            <small class="text-muted">Awaiting Admin approval</small>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="rounded-3 bg-success bg-opacity-10 p-3">
+                            <i class="bi bi-check-circle fs-3 text-success"></i>
+                        </div>
+
+                        <div>
+                            <small class="text-muted">Approved Block Plans</small>
+                            <h3 class="fw-bold mb-0">{{ approved_plans }}</h3>
+                            <small class="text-muted">Approved maintenance blocks</small>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="rounded-3 bg-info bg-opacity-10 p-3">
+                            <i class="bi bi-clipboard-check fs-3 text-info"></i>
+                        </div>
+
+                        <div>
+                            <small class="text-muted">Completed Requests</small>
+                            <h3 class="fw-bold mb-0">{{ completed_requests }}</h3>
+                            <small class="text-muted">Completed maintenance work</small>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center gap-3">
+
+                        <div class="rounded-3 bg-danger bg-opacity-10 p-3">
+                            <i class="bi bi-clock-history fs-3 text-danger"></i>
+                        </div>
+
+                        <div>
+                            <small class="text-muted">Total Blocked Hours</small>
+                            <h3 class="fw-bold mb-0">{{ total_blocked_hours }}</h3>
+                            <small class="text-muted">Hours reserved for maintenance</small>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Project Information and Engine Status -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-lg-7">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="rounded-3 bg-primary bg-opacity-10 p-2">
+                            <i class="bi bi-info-circle fs-4 text-primary"></i>
+                        </div>
+
+                        <h5 class="fw-bold mb-0">About the Project</h5>
+                    </div>
+
+                    <p class="text-muted">
+                        This system aims to optimize railway maintenance block
+                        planning by identifying suitable time slots while
+                        considering train schedules and maintenance requirements.
+                    </p>
+
+                    <p class="text-muted mb-0">
+                        The goal is to minimize train disruptions and maximize
+                        railway asset availability through intelligent scheduling
+                        and optimization techniques.
+                    </p>
+
+                    <hr>
+
+                    <div class="row g-3">
+
+                        <div class="col-sm-6">
+                            <div class="d-flex gap-2">
+                                <i class="bi bi-calendar2-check text-primary fs-5"></i>
+                                <div>
+                                    <strong class="d-block">Smart Scheduling</strong>
+                                    <small class="text-muted">Find suitable maintenance windows.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="d-flex gap-2">
+                                <i class="bi bi-shield-check text-success fs-5"></i>
+                                <div>
+                                    <strong class="d-block">Conflict Detection</strong>
+                                    <small class="text-muted">Consider existing train schedules.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-lg-5">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="rounded-3 bg-info bg-opacity-10 p-2">
+                            <i class="bi bi-cpu fs-4 text-info"></i>
+                        </div>
+
+                        <h5 class="fw-bold mb-0">AI Planning Engine</h5>
+                    </div>
+
+
+                    {% if ai_status == "active" %}
+
+                        <div class="alert alert-success d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-check-circle-fill fs-4"></i>
+
+                            <div>
+                                <strong>Engine Active</strong>
+                                <div class="small">Optimization engine is active.</div>
+                            </div>
+                        </div>
+
+                    {% elif ai_status == "development" %}
+
+                        <div class="alert alert-warning d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-hourglass-split fs-4"></i>
+
+                            <div>
+                                <strong>Under Development</strong>
+                                <div class="small">Optimization engine is being developed.</div>
+                            </div>
+                        </div>
+
+                    {% else %}
+
+                        <div class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-exclamation-circle-fill fs-4"></i>
+
+                            <div>
+                                <strong>Engine Unavailable</strong>
+                                <div class="small">Optimization engine is currently unavailable.</div>
+                            </div>
+                        </div>
+
+                    {% endif %}
+
+
+                    <p class="text-muted small">
+                        The planning engine evaluates train schedules and
+                        maintenance requirements to identify suitable block windows.
+                    </p>
+
+                    <a href="{% url 'ai_block_planner' %}" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-arrow-right-circle"></i>
+                        Go to AI Block Planner
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Analytics Charts -->
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-bar-chart-line text-primary fs-5"></i>
+        <h5 class="fw-bold mb-0">Planning Analytics</h5>
+    </div>
+
+
+    <div class="row g-3 mb-4">
+
+        <!-- Section-wise Block Hours -->
+        <div class="col-lg-7">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-1">Section-wise Planned Block Hours</h5>
+                    <small class="text-muted">
+                        Maintenance block hours for each railway section
+                    </small>
+                </div>
+
+                <div class="card-body px-4 pb-4">
+
+                    <div style="height: 320px; position: relative;">
+                        <canvas id="sectionBlockChart"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Availability Chart -->
+        <div class="col-lg-5">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-1">Overall Planned Availability</h5>
+                    <small class="text-muted">
+                        Distribution of available and blocked hours
+                    </small>
+                </div>
+
+                <div class="card-body px-4 pb-4">
+
+                    <div style="height: 320px; position: relative;">
+                        <canvas id="availabilityChart"></canvas>
+                    </div>
+
+                    <div class="d-flex justify-content-center flex-wrap gap-3 mt-3">
+
+                        <span class="small text-muted">
+                            <i class="bi bi-circle-fill text-success"></i>
+                            Available: {{ total_available_hours }} hours
+                        </span>
+
+                        <span class="small text-muted">
+                            <i class="bi bi-circle-fill text-warning"></i>
+                            Blocked: {{ total_blocked_hours }} hours
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Railway Sections Table -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white border-0 p-4">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                <div>
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-signpost-2 text-primary"></i>
+                        Railway Sections
+                    </h5>
+
+                    <small class="text-muted">
+                        Overview of registered railway routes
+                    </small>
+                </div>
+
+                <a href="{% url 'section_list' %}" class="btn btn-sm btn-outline-primary">
+                    View All Sections
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body pt-0">
+
+            {% if sections %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>Section Code</th>
+                                <th>Section Name</th>
+                                <th>Railway Route</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for section in sections %}
+
+                            <tr>
+
+                                <td>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary border">
+                                        {{ section.section_code }}
+                                    </span>
+                                </td>
+
+                                <td class="fw-semibold">
+                                    {{ section.name }}
+                                </td>
+
+                                <td>
+                                    <span class="text-muted">
+                                        {{ section.from_station }}
+                                    </span>
+
+                                    <i class="bi bi-arrow-right text-primary mx-1"></i>
+
+                                    <span class="text-muted">
+                                        {{ section.to_station }}
+                                    </span>
+                                </td>
+
+                                <td>
+
+                                    {% if section.is_active %}
+
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i>
+                                            Active
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-pause-circle"></i>
+                                            Inactive
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="text-center py-4">
+                    <i class="bi bi-signpost-2 fs-1 text-muted"></i>
+                    <p class="text-muted mt-2 mb-0">No railway sections available.</p>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Recent Maintenance Requests -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white border-0 p-4">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                <div>
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-tools text-primary"></i>
+                        Recent Maintenance Requests
+                    </h5>
+
+                    <small class="text-muted">
+                        Latest maintenance requests submitted to the system
+                    </small>
+                </div>
+
+                <a href="{% url 'maintenance_request_list' %}" class="btn btn-sm btn-outline-primary">
+                    View All Requests
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body pt-0">
+
+            {% if maintenance_requests %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Section</th>
+                                <th>Work Type</th>
+                                <th>Priority</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for maintenance_request in maintenance_requests %}
+
+                            <tr>
+
+                                <td>
+                                    <span class="fw-semibold text-primary">
+                                        Request {{ maintenance_request.id }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ maintenance_request.section.section_code }}
+                                </td>
+
+                                <td>
+                                    {{ maintenance_request.get_work_type_display }}
+                                </td>
+
+                                <td>
+
+                                    {% if maintenance_request.priority == "CRITICAL" %}
+
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                            Critical
+                                        </span>
+
+                                    {% elif maintenance_request.priority == "HIGH" %}
+
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-arrow-up-circle"></i>
+                                            High
+                                        </span>
+
+                                    {% elif maintenance_request.priority == "MEDIUM" %}
+
+                                        <span class="badge bg-info text-dark">
+                                            Medium
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-secondary">
+                                            Low
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+
+                                    {% if maintenance_request.status == "PENDING" %}
+
+                                        <span class="badge bg-warning text-dark">Pending</span>
+
+                                    {% elif maintenance_request.status == "PLANNED" %}
+
+                                        <span class="badge bg-primary">Planned</span>
+
+                                    {% elif maintenance_request.status == "COMPLETED" %}
+
+                                        <span class="badge bg-success">Completed</span>
+
+                                    {% elif maintenance_request.status == "CANCELLED" %}
+
+                                        <span class="badge bg-secondary">Cancelled</span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-light text-dark">
+                                            {{ maintenance_request.get_status_display }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="text-center py-4">
+                    <i class="bi bi-clipboard-x fs-1 text-muted"></i>
+                    <p class="text-muted mt-2 mb-0">
+                        No maintenance requests available.
+                    </p>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Prototype Disclaimer -->
+    <div class="alert alert-info border-0 shadow-sm">
+
+        <div class="d-flex gap-2">
+
+            <i class="bi bi-info-circle-fill fs-5"></i>
+
+            <div>
+                <strong>Academic Prototype Notice</strong>
+
+                <p class="mb-0 small">
+                    This dashboard uses simulated railway data for academic
+                    demonstration. Its block plans are not real railway
+                    operating permissions or authorizations.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Django Data to JavaScript -->
+{{ section_labels|json_script:"section-labels-data" }}
+{{ section_block_hours|json_script:"section-block-hours-data" }}
+
+{{ total_available_hours|json_script:"available-hours-data" }}
+{{ total_blocked_hours|json_script:"blocked-hours-data" }}
+
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+
+<script>
+
+    // Read data generated by Django.
+
+    const sectionLabels = JSON.parse(
+        document.getElementById('section-labels-data').textContent
+    );
+
+    const sectionBlockHours = JSON.parse(
+        document.getElementById('section-block-hours-data').textContent
+    );
+
+    const availableHours = Number(JSON.parse(
+        document.getElementById('available-hours-data').textContent
+    ));
+
+    const blockedHours = Number(JSON.parse(
+        document.getElementById('blocked-hours-data').textContent
+    ));
+
+
+    // Section-wise Planned Block Hours Chart
+
+    const sectionChartElement = document.getElementById('sectionBlockChart');
+
+    new Chart(sectionChartElement, {
+
+        type: 'bar',
+
+        data: {
+
+            labels: sectionLabels,
+
+            datasets: [{
+
+                label: 'Blocked Hours',
+
+                data: sectionBlockHours,
+
+                backgroundColor: 'rgba(59, 130, 246, 0.75)',
+
+                borderColor: 'rgb(37, 99, 235)',
+
+                borderWidth: 1,
+
+                borderRadius: 6,
+
+                maxBarThickness: 55
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            scales: {
+
+                y: {
+
+                    beginAtZero: true,
+
+                    title: {
+                        display: true,
+                        text: 'Blocked Hours'
+                    },
+
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.06)'
+                    }
+
+                },
+
+                x: {
+
+                    title: {
+                        display: true,
+                        text: 'Railway Sections'
+                    },
+
+                    grid: {
+                        display: false
+                    }
+
+                }
+
+            },
+
+            plugins: {
+
+                legend: {
+                    display: false
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y + ' hours';
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+    });
+
+
+    // Overall Planned Availability Chart
+
+    const availabilityChartElement = document.getElementById('availabilityChart');
+
+    new Chart(availabilityChartElement, {
+
+        type: 'doughnut',
+
+        data: {
+
+            labels: [
+                'Available Hours',
+                'Blocked Hours'
+            ],
+
+            datasets: [{
+
+                data: [
+                    availableHours,
+                    blockedHours
+                ],
+
+                backgroundColor: [
+                    'rgb(34, 197, 94)',
+                    'rgb(245, 158, 11)'
+                ],
+
+                borderWidth: 0,
+
+                hoverOffset: 8
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            maintainAspectRatio: false,
+
+            cutout: '70%',
+
+            plugins: {
+
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                },
+
+                tooltip: {
+
+                    callbacks: {
+
+                        label: function(context) {
+
+                            return context.label + ': ' +
+                                context.parsed + ' hours';
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+</script>
+
+{% endblock %}

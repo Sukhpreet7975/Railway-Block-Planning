@@ -1,0 +1,458 @@
+
+{% extends 'operations/base.html' %}
+
+{% block title %}Saved Block Plans | Railway Operations{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-calendar-check text-primary"></i>
+                Saved Block Plans
+            </h2>
+
+            <p class="text-muted mb-0">
+                View, manage and monitor saved railway maintenance block plans.
+            </p>
+        </div>
+
+        <a href="{% url 'ai_block_planner' %}" class="btn btn-primary">
+            <i class="bi bi-cpu"></i>
+            AI Block Planner
+        </a>
+
+    </div>
+
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <small class="text-muted">Total Block Plans</small>
+                            <h3 class="fw-bold mb-0">{{ block_plans.count }}</h3>
+                            <small class="text-muted">Saved records</small>
+                        </div>
+
+                        <div class="rounded-3 bg-primary bg-opacity-10 p-3">
+                            <i class="bi bi-calendar-check fs-2 text-primary"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <small class="text-muted">Proposed Plans</small>
+                            <h3 class="fw-bold mb-0 text-warning">
+                                {{ block_plans|length }}
+                            </h3>
+                            <small class="text-muted">Awaiting approval</small>
+                        </div>
+
+                        <div class="rounded-3 bg-warning bg-opacity-10 p-3">
+                            <i class="bi bi-hourglass-split fs-2 text-warning"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <small class="text-muted">Approved Plans</small>
+                            <h3 class="fw-bold mb-0 text-success">
+                                {{ approved_count|default:"0" }}
+                            </h3>
+                            <small class="text-muted">Approved maintenance blocks</small>
+                        </div>
+
+                        <div class="rounded-3 bg-success bg-opacity-10 p-3">
+                            <i class="bi bi-check-circle fs-2 text-success"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-xl-3 col-sm-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <small class="text-muted">Cancelled Plans</small>
+                            <h3 class="fw-bold mb-0 text-danger">
+                                {{ cancelled_count|default:"0" }}
+                            </h3>
+                            <small class="text-muted">Cancelled records</small>
+                        </div>
+
+                        <div class="rounded-3 bg-danger bg-opacity-10 p-3">
+                            <i class="bi bi-x-circle fs-2 text-danger"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Block Plan Records -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white border-0 p-4">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                <div>
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-list-check text-primary"></i>
+                        Block Plan Records
+                    </h5>
+
+                    <small class="text-muted">
+                        Saved maintenance schedules and their approval status
+                    </small>
+                </div>
+
+                <span class="badge bg-primary">
+                    {{ block_plans.count }} Records
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body pt-0">
+
+            {% if block_plans %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th>Plan ID</th>
+                                <th>Request</th>
+                                <th>Railway Section</th>
+                                <th>Work Type</th>
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Status</th>
+                                <th>Created At</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for plan in block_plans %}
+
+                            <tr>
+
+                                <!-- Plan ID -->
+                                <td>
+                                    <span class="fw-semibold text-primary">
+                                        Plan {{ plan.id }}
+                                    </span>
+                                </td>
+
+
+                                <!-- Request ID -->
+                                <td>
+                                    <span class="badge bg-light text-dark border">
+                                        Request {{ plan.maintenance_request.id }}
+                                    </span>
+                                </td>
+
+
+                                <!-- Railway Section -->
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ plan.maintenance_request.section.section_code }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        {{ plan.maintenance_request.section.from_station }}
+                                        <i class="bi bi-arrow-right"></i>
+                                        {{ plan.maintenance_request.section.to_station }}
+                                    </small>
+                                </td>
+
+
+                                <!-- Work Type -->
+                                <td>
+                                    {{ plan.maintenance_request.get_work_type_display }}
+                                </td>
+
+
+                                <!-- Start Time -->
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ plan.start_time|date:"d M Y" }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i>
+                                        {{ plan.start_time|date:"H:i" }}
+                                    </small>
+                                </td>
+
+
+                                <!-- End Time -->
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ plan.end_time|date:"d M Y" }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock"></i>
+                                        {{ plan.end_time|date:"H:i" }}
+                                    </small>
+                                </td>
+
+
+                                <!-- Status -->
+                                <td>
+
+                                    {% if plan.status == 'PROPOSED' %}
+
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-hourglass-split"></i>
+                                            Proposed
+                                        </span>
+
+                                    {% elif plan.status == 'APPROVED' %}
+
+                                        <span class="badge bg-success">
+                                            <i class="bi bi-check-circle"></i>
+                                            Approved
+                                        </span>
+
+                                    {% elif plan.status == 'CANCELLED' %}
+
+                                        <span class="badge bg-danger">
+                                            <i class="bi bi-x-circle"></i>
+                                            Cancelled
+                                        </span>
+
+                                    {% elif plan.status == 'COMPLETED' %}
+
+                                        <span class="badge bg-info text-dark">
+                                            <i class="bi bi-check2-all"></i>
+                                            Completed
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-secondary">
+                                            {{ plan.get_status_display }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <!-- Created At -->
+                                <td>
+                                    <div>
+                                        {{ plan.created_at|date:"d M Y" }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        {{ plan.created_at|date:"H:i" }}
+                                    </small>
+                                </td>
+
+
+                                <!-- Actions -->
+                                <td>
+
+                                    <div class="d-flex justify-content-center gap-2 flex-wrap">
+
+                                        {% if plan.status == 'PROPOSED' %}
+
+                                            <form
+                                                method="POST"
+                                                action="{% url 'approve_block_plan' plan.id %}"
+                                                onsubmit="return confirm('Are you sure you want to approve this block plan?');"
+                                            >
+                                                {% csrf_token %}
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-sm btn-outline-success"
+                                                    title="Approve Plan"
+                                                >
+                                                    <i class="bi bi-check-lg"></i>
+                                                    Approve
+                                                </button>
+
+                                            </form>
+
+                                        {% endif %}
+
+
+                                        {% if plan.status == 'PROPOSED' or plan.status == 'APPROVED' %}
+
+                                            <form
+                                                method="POST"
+                                                action="{% url 'cancel_block_plan' plan.id %}"
+                                                onsubmit="return confirm('Are you sure you want to cancel this block plan?');"
+                                            >
+                                                {% csrf_token %}
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    title="Cancel Plan"
+                                                >
+                                                    <i class="bi bi-x-lg"></i>
+                                                    Cancel
+                                                </button>
+
+                                            </form>
+
+                                        {% endif %}
+
+
+                                        {% if plan.status == 'COMPLETED' %}
+
+                                            <span class="text-success small">
+                                                <i class="bi bi-check-circle-fill"></i>
+                                                Finished
+                                            </span>
+
+                                        {% elif plan.status == 'CANCELLED' %}
+
+                                            <span class="text-muted small">
+                                                <i class="bi bi-dash-circle"></i>
+                                                No Actions
+                                            </span>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- Footer -->
+                <div class="border-top pt-3 mt-2">
+
+                    <small class="text-muted">
+                        Showing {{ block_plans.count }} saved block plans.
+                    </small>
+
+                </div>
+
+
+            {% else %}
+
+
+                <!-- Empty State -->
+                <div class="text-center py-5">
+
+                    <div class="mb-3">
+                        <i class="bi bi-calendar-x display-3 text-muted"></i>
+                    </div>
+
+                    <h5 class="fw-bold">
+                        No Block Plans Found
+                    </h5>
+
+                    <p class="text-muted mb-4">
+                        No maintenance block plans have been saved yet.
+                        Use the AI Block Planner to generate and save a recommendation.
+                    </p>
+
+                    <a href="{% url 'ai_block_planner' %}" class="btn btn-primary">
+                        <i class="bi bi-cpu"></i>
+                        Generate Block Plan
+                    </a>
+
+                </div>
+
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+
+    <!-- Prototype Notice -->
+    <div class="alert alert-info border-0 shadow-sm mt-4 mb-0">
+
+        <div class="d-flex gap-2">
+
+            <i class="bi bi-info-circle-fill fs-5"></i>
+
+            <div>
+                <strong>Important Notice</strong>
+
+                <p class="small mb-0">
+                    These block plans are generated using simulated data
+                    for academic demonstration. Approval in this prototype
+                    does not constitute real railway block authorization.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

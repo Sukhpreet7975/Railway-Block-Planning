@@ -1,0 +1,50 @@
+{% extends 'operations/base.html' %}
+
+{% block title %}Delete Train Schedule{% endblock %}
+
+{% block content %}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <h3>Delete Train Schedule</h3>
+
+        <p>Are you sure you want to delete this schedule?</p>
+
+        <p>
+            <strong>Train:</strong>
+            {{ schedule.train.train_number }} - {{ schedule.train.train_name }}
+        </p>
+
+        <p>
+            <strong>Section:</strong>
+            {{ schedule.section.name }}
+        </p>
+
+        <p>
+            <strong>Start:</strong>
+            {{ schedule.start_time|date:"d M Y, h:i A" }}
+        </p>
+
+        <p>
+            <strong>End:</strong>
+            {{ schedule.end_time|date:"d M Y, h:i A" }}
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <button type="submit" class="btn btn-danger">
+                Yes, Delete
+            </button>
+
+            <a href="{% url 'train_schedule_list' %}"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,227 @@
+
+{% extends 'operations/base.html' %}
+
+{% block title %}Login | Railway AI{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid py-4 py-lg-5">
+
+    <div class="row justify-content-center align-items-center">
+
+        <div class="col-xl-9 col-lg-10">
+
+            <div class="row g-0 shadow-lg rounded-4 overflow-hidden">
+
+                <!-- Left Information Panel -->
+                <div class="col-lg-6 d-none d-lg-flex">
+
+                    <div class="w-100 p-5 d-flex flex-column justify-content-between"
+                         style="background: linear-gradient(145deg, #172554, #312e81, #1e1b4b); color: white;">
+
+                        <div>
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-3 mb-4"
+                                 style="width: 60px; height: 60px; background: rgba(255,255,255,0.12);">
+                                <i class="bi bi-train-front-fill fs-2"></i>
+                            </div>
+
+                            <h2 class="fw-bold mb-3">
+                                Railway AI
+                            </h2>
+
+                            <h4 class="fw-semibold mb-3">
+                                Intelligent Railway Block Planning
+                            </h4>
+
+                            <p class="text-white-50 lh-lg">
+                                A smarter approach to railway maintenance planning
+                                through train schedule analysis, conflict detection,
+                                and optimized maintenance block recommendations.
+                            </p>
+                        </div>
+
+                        <div class="mt-5">
+
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <i class="bi bi-check-circle-fill text-info"></i>
+                                <span class="text-white-50">Smart Block Scheduling</span>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <i class="bi bi-check-circle-fill text-info"></i>
+                                <span class="text-white-50">Train Conflict Detection</span>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi bi-check-circle-fill text-info"></i>
+                                <span class="text-white-50">Asset Availability Planning</span>
+                            </div>
+
+                        </div>
+
+                        <div class="small text-white-50 mt-5">
+                            <i class="bi bi-shield-check me-2"></i>
+                            Academic Project Prototype
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Right Login Panel -->
+                <div class="col-lg-6">
+
+                    <div class="card border-0 rounded-0 h-100">
+
+                        <div class="card-body p-4 p-md-5">
+
+                            <!-- Login Header -->
+                            <div class="text-center mb-4">
+
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3"
+                                     style="width: 65px; height: 65px; background: #eef2ff; color: #4338ca;">
+
+                                    <i class="bi bi-person-lock fs-2"></i>
+
+                                </div>
+
+                                <h3 class="fw-bold text-dark mb-2">
+                                    Welcome Back
+                                </h3>
+
+                                <p class="text-secondary mb-0">
+                                    Login to access your dashboard
+                                </p>
+
+                            </div>
+
+                            <!-- Error Message -->
+                            {% if form.errors %}
+                                <div class="alert alert-danger border-0 rounded-3 small">
+                                    <i class="bi bi-exclamation-circle-fill me-2"></i>
+                                    Invalid username or password.
+                                    Please try again.
+                                </div>
+                            {% endif %}
+
+                            {% if next and user.is_authenticated %}
+                                <div class="alert alert-warning border-0 rounded-3 small">
+                                    Your account does not have permission to access this page.
+                                    Please login with an authorized account.
+                                </div>
+                            {% endif %}
+
+                            <!-- Login Form -->
+                            <form method="POST">
+                                {% csrf_token %}
+
+                                <div class="mb-4">
+
+                                    <label for="username" class="form-label fw-semibold text-dark">
+                                        Username
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-person text-secondary"></i>
+                                        </span>
+
+                                        <input
+                                            type="text"
+                                            name="username"
+                                            id="username"
+                                            class="form-control bg-light border-start-0"
+                                            placeholder="Enter your username"
+                                            required
+                                            autofocus
+                                            autocomplete="username"
+                                        >
+
+                                    </div>
+
+                                </div>
+
+                                <div class="mb-4">
+
+                                    <label for="password" class="form-label fw-semibold text-dark">
+                                        Password
+                                    </label>
+
+                                    <div class="input-group">
+
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="bi bi-lock text-secondary"></i>
+                                        </span>
+
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            id="password"
+                                            class="form-control bg-light border-start-0"
+                                            placeholder="Enter your password"
+                                            required
+                                            autocomplete="current-password"
+                                        >
+
+                                    </div>
+
+                                </div>
+
+                                <input
+                                    type="hidden"
+                                    name="next"
+                                    value="{{ next }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary w-100 py-2 fw-semibold rounded-3"
+                                    style="background: linear-gradient(90deg, #4338ca, #6366f1); border: none;"
+                                >
+
+                                    <i class="bi bi-box-arrow-in-right me-2"></i>
+                                    Login to Dashboard
+
+                                </button>
+
+                            </form>
+
+                            <!-- Footer -->
+                            <div class="text-center mt-4">
+
+                                <p class="small text-secondary mb-2">
+                                    <i class="bi bi-shield-lock me-1"></i>
+                                    Secure access for authorized users
+                                </p>
+
+                                <a href="{% url 'home' %}"
+                                   class="text-decoration-none small fw-semibold">
+
+                                    <i class="bi bi-arrow-left me-1"></i>
+                                    Back to Home
+
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Bottom Note -->
+            <div class="text-center mt-4 text-secondary small">
+                Railway Block Planning System | Academic Prototype
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
